@@ -5,6 +5,7 @@ from vosk import Model, KaldiRecognizer
 import time
 from pydub import AudioSegment
 from pydub import AudioSegment
+from deep_translator import GoogleTranslator
 ############################ VARIABLES ############################
 
 MODEL_PATH = "models/vosk-model-small-fr-0.22"
@@ -74,6 +75,8 @@ with wave.open(AUDIO_FILE, "rb") as wf:
     # Print the full transcript
     full_transcription = ' '.join(transcript)
     print("\nFull Transcription:\n", full_transcription)
+    translated = GoogleTranslator(source='auto', target='english').translate(full_transcription) 
+    print("\nFull Translated Transcription:\n", translated)
     # Save the full transcript to a text file
     with open(OUTPUT_FILE, "w") as f:
         f.write(full_transcription)
