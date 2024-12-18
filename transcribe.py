@@ -6,6 +6,30 @@ import time
 from pydub import AudioSegment
 from pydub import AudioSegment
 from deep_translator import GoogleTranslator
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from datetime import datetime
+
+############################ Connect to MongoDB ##################
+
+uri = "mongodb+srv://admin:CIT_admin0@citcluster0.mhrd1.mongodb.net/?retryWrites=true&w=majority&appName=CITcluster0"
+
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
+database_name="CITcluster0"
+collection_name="Collection_1"
+db = client[database_name]
+collection = db[collection_name]
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
+    
+    
+##TODO : Make it so every 1 second of transcription, the data is being sent
+##to MongoDB with title and timestamp
+
 ############################ VARIABLES ############################
 
 MODEL_PATH = "models/vosk-model-small-fr-0.22"
@@ -54,7 +78,7 @@ with wave.open(AUDIO_FILE, "rb") as wf:
     # Chunk the audio and transcribe
     transcript = []
     while True:
-        data = wf.readframes(4000)  # Read 4000 frames (small chunk of audio)
+        data = wf.readframes(10000)  # Read 4000 frames (small chunk of audio)
         if len(data) == 0:
             break
 
@@ -65,6 +89,14 @@ with wave.open(AUDIO_FILE, "rb") as wf:
         else:
             # Get partial results (useful for live transcriptions)
             partial_result = json.loads(recognizer.PartialResult())
+            if(partial_result):
+                    data_to_send= {
+                            "title": "test1",
+                            "content": partial_result,
+                            "timestamp": datetime.now()
+                    }
+                    collection.insert_one(data_to_send)
+                    print("data sent")
             #print("Partial transcript:", partial_result['partial'])
 
     # Get the final result after the loop ends
