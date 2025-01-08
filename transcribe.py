@@ -12,7 +12,13 @@ from datetime import datetime
 
 ############################ Connect to MongoDB ##################
 
-uri = "mongodb+srv://admin:CIT_admin0@citcluster0.mhrd1.mongodb.net/?retryWrites=true&w=majority&appName=CITcluster0"
+##### ADD URI #######
+
+
+
+
+
+
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
@@ -90,13 +96,13 @@ with wave.open(AUDIO_FILE, "rb") as wf:
             # Get partial results (useful for live transcriptions)
             partial_result = json.loads(recognizer.PartialResult())
             if(partial_result):
-                    data_to_send= {
-                            "title": "test1",
-                            "content": partial_result,
-                            "timestamp": datetime.now()
-                    }
-                    collection.insert_one(data_to_send)
-                    print("data sent")
+                data_to_send= {
+                        "title": "test1",
+                        "content": partial_result,
+                        "timestamp": datetime.now()
+                }
+                collection.insert_one(data_to_send)
+                print("data sent")
             #print("Partial transcript:", partial_result['partial'])
 
     # Get the final result after the loop ends
